@@ -1,6 +1,8 @@
 import time
 import re
 import requests
+import pandas as pd
+import numpy as np
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,32 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-
-# Get list of Sanctioned Wallet IDs
-
-# Request page of sanctioned wallets
-sanctions_url = "https://www.opensanctions.org/search/?datasets=us_ofac_sdn&schema=CryptoWallet&scope=securities"
-page = requests.get(sanctions_url)
-
-# Parse html returned
-soup = BeautifulSoup(page.content, "html.parser")
-
-# Get all `li` elements
-all_list_items = soup.find_all("li")
-
-wallet_ids = []
-for li in all_list_items:
-    if li.has_attr('class'):
-        for className in li["class"]:
-            if "Search_resultItem" in className:
-                ending_string_index = li.getText().index("Cryptocurrency")
-                if ending_string_index > 0:
-                    wallet_id = li.getText()[0:ending_string_index]
-                    wallet_ids.append(wallet_id)
-
-
-print(wallet_ids)
-
+df = pd.read_csv('./data/securities.csv')
 
 # Get all transactions for current wallet id (only first for now)
 wallet_id = wallet_ids[0]
